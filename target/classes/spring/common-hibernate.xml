@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:beans="http://www.springframework.org/schema/beans" xmlns:context="http://www.springframework.org/schema/context"
+	xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd
+		http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		">
+
+	<description>HIBERNATE | 事务相关配置</description>
+
+	<!-- 通过注解配置事务 -->
+	<tx:annotation-driven transaction-manager="transactionManager" proxy-target-class="true" />
+
+	<!--Hibernate Session工厂 -->
+	<bean id="sessionFactory" class="org.springframework.orm.hibernate4.LocalSessionFactoryBean">
+		<property name="dataSource" ref="dataSource" />
+		<property name="packagesToScan" value="${hibernate.packagesToScan}" />
+		<property name="hibernateProperties">
+			<props>
+				<prop key="hibernate.dialect">${hibernate.dialect}</prop>
+				<prop key="hibernate.hbm2ddl.auto">${hibernate.hbm2ddl.auto}</prop>
+				<prop key="hibernate.jdbc.fetch_size">${hibernate.jdbc.fetch_size}</prop>
+				<prop key="hibernate.jdbc.batch_size">${hibernate.jdbc.batch_size}</prop>
+				<prop key="hibernate.show_sql">${hibernate.show_sql}</prop>
+				<prop key="hibernate.format_sql">${hibernate.format_sql}</prop>
+				<prop key="hibernate.connection.SetBigStringTryClob">${hibernate.connection.SetBigStringTryClob}</prop>
+				<prop key="current_session_context_class">thread</prop>
+			</props>
+		</property>
+	</bean>
+
+	<!-- 配置事务管理器 | 注:这里的dataSource和SqlSessionFactoryBean的dataSource要一致，不然事务不起作用 -->
+	<bean id="transactionManager" class="org.springframework.orm.hibernate4.HibernateTransactionManager">
+		<property name="sessionFactory" ref="sessionFactory" />
+		<property name="globalRollbackOnParticipationFailure" value="false" />
+	</bean>
+
+	<!-- 为DAO的 HibernateSession提供者 -->
+	<bean id="hibernateSessionProvider" class="com.tang.plug.hibernate.session.DefaultHibernateSessionProviderImpl" />
+
+	<!-- 通用HibernateDao -->
+	<bean id="hibernateGenericDao" class="com.tang.plug.hibernate.HibernateGenericDao" />
+	
+</beans>

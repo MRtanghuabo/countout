@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:aop="http://www.springframework.org/schema/aop" xmlns:context="http://www.springframework.org/schema/context" xmlns:tx="http://www.springframework.org/schema/tx"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+		http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-4.0.xsd
+		http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+		http://www.springframework.org/schema/tx http://www.springframework.org/schema/tx/spring-tx-4.0.xsd"
+	default-autowire="byName">
+
+	<description>Spring公共配置 </description>
+	
+	<!-- 自动扫描且只扫描@Controller -->
+	<context:component-scan base-package="com" use-default-filters="false">
+		<context:include-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<!-- 属性占位符配置器 -->
+	<context:property-placeholder ignore-unresolvable="true" properties-ref="applicationProperties" />
+
+	<!-- 通过application.properties读取配置 -->
+	<bean id="applicationProperties" class="com.tang.plug.spring.config.ApplicationPropertiesFactoryBean" />
+
+	<!-- 扫描除了Controller以外的注解 -->
+	<context:component-scan base-package="com">
+		<context:exclude-filter type="annotation" expression="org.springframework.stereotype.Controller" />
+	</context:component-scan>
+
+	<!-- 启用注解 -->
+	<context:annotation-config />
+
+	<!-- 导入模块配置 -->
+	<import resource="classpath:spring/common-jdbc.xml" />
+	<import resource="classpath:spring/common-hibernate.xml" />
+	<import resource="classpath:spring/common-mybatis.xml" />
+	<import resource="classpath:spring/common-shiro.xml" />
+	<import resource="classpath:spring/spring-redis.xml" />
+
+</beans>

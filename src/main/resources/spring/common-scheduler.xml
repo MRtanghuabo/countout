@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans" 
+	xmlns:task="http://www.springframework.org/schema/task"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://www.springframework.org/schema/beans 
+	http://www.springframework.org/schema/beans/spring-beans.xsd
+    http://www.springframework.org/schema/task 
+    http://www.springframework.org/schema/task/spring-task.xsd">
+
+	<!-- 调度任务驱动 -->
+	<!-- <task:annotation-driven scheduler="tableauTack" /> -->
+	
+	<!-- <task:scheduler id="tableauTack" pool-size="5"/> -->
+	
+		
+	<!--分布式定时任务 适用于集群 -->
+	<!-- 启动触发器的配置开始 -->
+	<!-- 总管理类, 如果将lazy-init='false'那么容器启动就会执行调度程序  -->
+	<!--
+	<bean id="startQuertz" name="startQuertz" lazy-init="false" autowire="no"
+		class="org.springframework.scheduling.quartz.SchedulerFactoryBean">
+		<property name="triggers">
+			
+			<list>
+				<ref bean="cronTrigger" />
+			</list>
+		</property>
+		<property name="applicationContextSchedulerContextKey" value="applicationContext" />
+		<property name="configLocation" value="classpath:quartz.properties" />
+		
+	   <property name="startupDelay" value="30"/>
+	</bean>
+	-->
+   <!--  <bean id="emailTask" name="emailTask" class="byit.aladdin.dataPush.service.impl.EmailTask"></bean>    -->
+<!--  <bean id="jobTask"
+        class="cn.byitgroup.datapush.entity.MethodInvokingJobDetailFactoryBean">
+        <property name="concurrent" value="false" />
+        <property name="shouldRecover" value="true" />
+        <property name="targetObject" ref="clusterJob" />
+        <property name="targetMethod" value="execute" />
+    </bean> -->
+ 
+   <bean id="jobTask" name="jobTask" class="org.springframework.scheduling.quartz.JobDetailFactoryBean">  
+         <property name="jobClass">  
+            <value>byit.aladdin.dataPush.entity.MyDetailQuartzJobBean</value>  
+        </property>  
+        <property name="jobDataAsMap">  
+            <map>  
+                <entry key="targetObject" value="emailTask" />  
+                <entry key="targetMethod" value="execute" />  
+                <entry key="concurrent" value="false"/>
+            </map>  
+        </property>  
+    </bean>  
+    <bean id="cronTrigger" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">  
+        <property name="jobDetail">  
+            <ref bean="jobTask" />  
+        </property>  
+        <property name="cronExpression">  
+            <value>0 */1 * * * ?</value>  
+        </property>  
+    </bean>  	
+</beans>
